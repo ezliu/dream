@@ -1,4 +1,3 @@
-# dream
-Decoupled Reward-free ExplorAtion and Execution for Meta-reinforcement learning
+# Explore then Execute: Adapting without Rewards via Factorized Meta-Reinforcement Learning
 
 Code coming soon!

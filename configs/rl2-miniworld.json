@@ -1,0 +1,15 @@
+{
+  "agent": {
+    "policy": {
+      "embedder": {
+        "experience_embedder": {
+          "state_embed_dim": 128,
+          "embed_dim": 128
+        }
+      }
+    },
+    "buffer": {
+      "max_buffer_size": 10000
+    }
+  }
+}

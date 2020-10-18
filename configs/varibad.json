@@ -1,0 +1,50 @@
+{
+  "agent": {
+    "type": "learned",
+    "policy": {
+      "type": "recurrent",
+      "epsilon_schedule": {
+        "begin": 1.0,
+        "end": 0.01,
+        "total_steps": 500000
+      },
+      "embedder": {
+        "type": "varibad",
+        "recurrent_embedder": {
+          "experience_embedder": {
+            "state_embed_dim": 64,
+            "instruction_embed_dim": 64,
+            "action_embed_dim": 16,
+            "reward_embed_dim": 16,
+            "done_embed_dim": 16,
+            "embed_dim": 64
+          },
+          "embed_dim": 64
+        },
+        "state_embedder": {
+          "type": "grid_instruction",
+          "embed_dim": 64
+        },
+        "action_embedder": {
+          "embed_dim": 64
+        },
+        "z_dim": 64,
+        "embed_dim": 64,
+        "predict_states": true
+      },
+      "test_epsilon": 0,
+      "discount": 0.99
+    },
+    "buffer": {
+      "type": "sequential",
+      "max_buffer_size": 16000,
+      "sequence_length": 50
+    },
+    "learning_rate": 0.0001,
+    "sync_target_freq": 5000,
+    "min_buffer_size": 800,
+    "batch_size": 32,
+    "update_freq": 4,
+    "max_grad_norm": 10
+  }
+}

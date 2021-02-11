@@ -295,22 +295,26 @@ class InstructionPolicyEmbedder(Embedder):
     self._instruction_embedder = instruction_embedder
     self._trajectory_embedder = trajectory_embedder
     self._fc_layer = nn.Linear(
-        obs_embedder.embed_dim + instruction_embedder.embed_dim +
-        self._trajectory_embedder.embed_dim, 256)
+        obs_embedder.embed_dim + self._trajectory_embedder.embed_dim, 256)
     self._final_layer = nn.Linear(256, embed_dim)
 
   def forward(self, states, hidden_state):
-    del hidden_state
+    obs_embed, hidden_state = self._obs_embedder(states, hidden_state)
+    trajectory_embed, _ = self._trajectory_embedder(
+        [state[0].trajectory for state in states])
 
-    obs_embed = self._obs_embedder([state.observation for state in states])
-    instruction_embed = self._instruction_embedder(
-        [torch.tensor(state.instructions) for state in states])
-    trajectory_embed, aux_losses = self._trajectory_embedder(
-        [state.trajectory for state in states])
+    if len(obs_embed.shape) > 2:
+      trajectory_embed = trajectory_embed.unsqueeze(1).expand(
+          -1, obs_embed.shape[1], -1)
 
     hidden = F.relu(self._fc_layer(
-        torch.cat((obs_embed, instruction_embed, trajectory_embed), -1)))
-    return self._final_layer(hidden), aux_losses
+        torch.cat((obs_embed, trajectory_embed), -1)))
+    return self._final_layer(hidden), hidden_state
+
+  def aux_loss(self, experiences):
+    _, aux_losses = self._trajectory_embedder(
+        [exp[0].state.trajectory for exp in experiences])
+    return aux_losses
 
   @classmethod
   def from_config(cls, config, env):
@@ -331,6 +335,11 @@ class InstructionPolicyEmbedder(Embedder):
     instruction_embedder = SimpleGridStateEmbedder(
         env.observation_space["instructions"],
         config.get("instruction_embedder").get("embed_dim"))
+    # Exploitation recurrence is not observing the rewards
+    exp_embedder = ExperienceEmbedder(
+        obs_embedder, instruction_embedder, None, None, None,
+        obs_embedder.embed_dim)
+    obs_embedder = RecurrentStateEmbedder(exp_embedder, obs_embedder.embed_dim)
 
     transition_config = config.get("transition_embedder")
     state_embedder = get_state_embedder(env)(

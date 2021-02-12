@@ -1,4 +1,1 @@
-# dream
-Decoupled Reward-free ExplorAtion and Execution for Meta-reinforcement learning
-
-Code coming soon!
+# Decoupling Exploration and Exploitation in Meta-Reinforcement Learning without Sacrifices

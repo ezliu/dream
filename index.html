@@ -201,25 +201,25 @@
     <meta name="msapplication-square70x70logo" content="//www-media.stanford.edu/assets/favicon/mstile-70x70.png" />
     <meta name="msapplication-square150x150logo" content="//www-media.stanford.edu/assets/favicon/mstile-150x150.png" />
     <meta name="msapplication-square310x310logo" content="//www-media.stanford.edu/assets/favicon/mstile-310x310.png" />
-    <title>Explore then Execute: Adapting without Rewards via Factorized Meta-Reinforcement Learning</title>
+    <title>Decoupling Exploration and Exploitation in Meta-Reinforcement Learning without Sacrifices</title>
   <meta name="HandheldFriendly" content="True" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="canonical" href="https://ezliu.github.io/" />
   <meta name="referrer" content="no-referrer-when-downgrade" />
 
-  <meta property="og:site_name" content="Factorized Meta-Reinforcement Learning" />
+  <meta property="og:site_name" content="Exploration in Meta-Reinforcement Learning" />
   <meta property="og:type" content="video.other" />
-  <meta property="og:title" content="Explore then Execute: Adapting without Rewards via Factorized Meta-Reinforcement Learning" />
-  <meta property="og:description" content="Evan Z. Liu, Aditi Raghunathan, Percy Liang, Chelsea Finn. Explore then Execute: Adapting without Rewards via Factorized Meta-Reinforcement Learning. 2020." />
+  <meta property="og:title" content="Decoupling Exploration and Exploitation in Meta-Reinforcement Learning without Sacrifices" />
+  <meta property="og:description" content="Evan Z. Liu, Aditi Raghunathan, Percy Liang, Chelsea Finn. Decoupling Exploration and Exploitation in Meta-Reinforcement Learning without Sacrifices. 2020." />
   <meta property="og:url" content="https://ezliu.github.io/" />
   <meta property="og:image" content="https://ezliu.github.io/resources/blue.svg" />
 
   <meta property="article:publisher" content="https://ezliu.github.io/" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Explore then Execute: Adapting without Rewards via Factorized Meta-Reinforcement Learning" />
-  <meta name="twitter:description" content="Evan Z. Liu, Aditi Raghunathan, Percy Liang, Chelsea Finn. Explore then Execute: Adapting without Rewards via Factorized Meta-Reinforcement Learning. 2020." />
+  <meta name="twitter:title" content="Decoupling Exploration and Exploitation in Meta-Reinforcement Learning without Sacrifices" />
+  <meta name="twitter:description" content="Evan Z. Liu, Aditi Raghunathan, Percy Liang, Chelsea Finn. Decoupling Exploration and Exploitation in Meta-Reinforcement Learning without Sacrifices. 2020." />
   <meta name="twitter:url" content="https://ezliu.github.io/" />
-  <meta name="twitter:image" content="https://ezliu.github.io/resources/blue.svg" />
+  <meta name="twitter:image" content="https://ezliu.github.io/resources/red.png" />
   <meta property="og:image:width" content="1600" />
   <meta property="og:image:height" content="900" />
 
@@ -232,8 +232,8 @@
 <body>
 
       <br>
-      <center><span style="font-size:44px;font-weight:bold;font-family:Source Sans Pro;">Explore then Execute: Adapting without Rewards <br/>
-          via Factorized Meta-Reinforcement Learning</span></center><br/>
+      <center><span style="font-size:44px;font-weight:bold;font-family:Source Sans Pro;">Decoupling Exploration and Exploitation in<br/>
+           Meta-Reinforcement Learning without Sacrifices</span></center><br/>
       <div class="table-like" style="justify-content:space-evenly;max-width:900px;margin:auto;">
           <div><center><span style="font-size:25px"><a href="https://cs.stanford.edu/~evanliu" target="_blank">Evan Z. Liu</a></span></center>
           <center><span style="font-size:25px">Stanford</span></center>
@@ -254,6 +254,7 @@
 
       <div class="table-like" style="justify-content:space-evenly;max-width:700px;margin:auto;padding:5px">
         <div><center><span style="font-size:28px"><a href="https://arxiv.org/abs/2008.02790">[Paper]</a></span></center></div>
+        <div><center><span style="font-size:28px"><a href="https://ai.stanford.edu/blog/meta-exploration/">[Blog Post]</a></span></center></div>
         <div><center><span style="font-size:28px"><a href='https://github.com/ezliu/dream'>[Code]</a></span></center> </div>
       </div>
 
@@ -262,303 +263,172 @@
       <br>
 
       <div style="width:800px; margin:0 auto" align="justify">
-        <p><b>Abstract.</b> We seek to efficiently learn by leveraging shared
-        structure between different tasks and environments. For example,
-        cooking is similar in different kitchens, even though the ingredients
-        may change location. In principle, meta-reinforcement learning
-        approaches can exploit this shared structure, but in practice, they
-        fail to adapt to new environments when adaptation requires targeted
-        exploration (e.g., exploring the cabinets to find ingredients in a new
-        kitchen). We show that existing approaches fail due to a
-        chicken-and-egg problem: learning what to explore requires knowing what
-        information is critical for solving the task, but learning to solve the
-        task requires already gathering this information via exploration. For
-        example, exploring to find the ingredients only helps a robot prepare a
-        meal if it already knows how to cook, but the robot can only learn to
-        cook if it already knows where the ingredients are. To address this, we
-        propose a new exploration objective (DREAM), based on identifying key
-        information in the environment, independent of how this information
-        will exactly be used solve the task. By decoupling exploration from
-        task execution, DREAM explores and consequently adapts to new
-        environments requiring no reward signal when the task is specified via
-        an instruction. Empirically, DREAM scales to more complex problems,
-        such as sparse-reward 3D visual navigation, while existing approaches
-        fail from insufficient exploration.
+        <p><b>Abstract.</b> The goal of meta-reinforcement learning (meta-RL)
+        is to build agents that can quickly learn new tasks by leveraging prior
+        experience on related tasks.  Learning a new task often requires both
+        exploring to gather task-relevant information and exploiting this
+        information to solve the task. In principle, optimal exploration and
+        exploitation can be learned end-to-end by simply maximizing task
+        performance. However, such meta-RL approaches struggle with local
+        optima due to a chicken-and-egg problem: learning to explore requires
+        good exploitation to gauge the exploration's utility, but learning to
+        exploit requires information gathered via exploration. Optimizing
+        separate objectives for exploration and exploitation can avoid this
+        problem, but prior meta-RL exploration objectives yield suboptimal
+        policies that gather information irrelevant to the task. We alleviate
+        both concerns by constructing an exploitation objective that
+        automatically identifies task-relevant information and an exploration
+        objective to recover only this information. This avoids local optima in
+        end-to-end training, without sacrificing optimal exploration.
+        Empirically, DREAM substantially outperforms existing approaches on
+        complex meta-RL problems, such as sparse-reward 3D visual navigation.
       </p>
       </div>
       <br><hr>
 
-      <center><h1>Goal and Preliminaries</h1></center>
-      <div style="width:800px; margin:0 auto; text-align=left" align="left">
-        <p><b>Goal.</b> Our goal is to learn agents (e.g., a robot chef) that can quickly
-          adapt to new, but similar tasks and environments (e.g., cooking in a
-          new kitchen after learning to cook in several training kitchens).  By
-          leveraging shared structure between different tasks and environments,
-          this can be much more sample efficient than learning a separate agent
-          from scratch for each task and environment.
-        </p>
+      <div style="width:800px; margin:0 auto; text-align=left", align="left">
+      <center id="videos"><h1>Qualitative Analysis of DREAM</h1></center>
+        <p>We provide visualizations and analysis of the policies learned by DREAM and other approaches below.</p>
 
-        <a href="resources/standard.svg"><img src="resources/standard.svg" width="800px"></img></a>
-        <center><p align="center">Standard meta-RL setting.</p></center>
+        <center><h2>Distracting Bus</h2></center>
 
-        <p>
-          <b>Meta-reinforcement learning preliminaries.</b>
-          Broadly, this goal is captured by the standard meta-reinforcement learning
-          (meta-RL) problem setting (pictured above), where during <i>meta-training</i>,
-          the agent trains on many tasks and environments, and then must
-          accomplish a new task in a new environment during <i>meta-testing</i>.
-          When presented with a new task and environment, the agent is allowed to
-          first spend an episode exploring, gathering any necessary information
-          (e.g., locating the ingredients),
-          before execution episodes, where the agent must accomplish the task
-          (e.g., cook a meal).
-        </p>
-
-        <p>
-          More formally, standard meta-RL considers a family of problems, where
-          each problem \(\mu\) identifies a
-          reward function \(\mathcal{R}_\mu\) (e.g., cook a pizza) and transition
-          dynamics (e.g., a kitchen).
-          Using the terminology from Duan et al., 2016, we define a <i>trial</i>
-          to consist of several episodes in the same problem.
-          The first episode is the <i>exploration episode</i>, where the agent is
-          allowed to gather information, without needing to maximize returns, and
-          all subsequent episodes are <i>execution episodes</i>, where the agent
-          must accomplish the task.
-          The goal is to maximize the returns achieved during the execution
-          episodes of meta-testing trials, after first training on many trials
-          during meta-training.
-        </p>
-      </div>
-
-      <br><hr>
-
-      <center><h1>Instruction-based Meta-Reinforcement Learning (IMRL)</h1></center>
-      <div style="width:800px; margin:0 auto; text-align=left" align="left">
-        <p>
-          <b>Improvements on the standard meta-RL setting.</b> While this
-          standard meta-RL setting is a general and useful problem
-          formulation, we observe two areas which can be made more realistic.
-          First, the standard setting requires the agent to <i>infer</i> the
-          task (e.g., the meal to cook) from reward observations, which can be
-          needlessly inefficient.
-          In a more realistic situation, the user could instead just tell the
-          agent what they want.
-        </p>
-
-        <a href="resources/instructions.svg"><img src="resources/instructions.svg" width="800px"></img></a>
         <center>
-          <p align="center">
-            Open and honest communication is important for your robots too.
+          <a href="resources/city_examples.svg"><img src="resources/city_examples.svg" width="800px"></img></a>
+          <p align="center" style="width:600px">
+            Examples of different problems and goals.
+            In different <i>problems</i>, the colored buses in the corners
+            change positions to be one of the 4! permutations.
+            In different <i>episodes</i>, the goal location changes to one of the four corners.
           </p>
         </center>
 
         <p>
-          Second, while the standard meta-RL setting leverages shared structure
-          between different problems (environment and task pairs), it does not
-          capture shared structure between different tasks in the same
-          environment.
-          More concretely, the task is fixed across all episodes in a trial,
-          and in order to perform a new task (e.g., cook a new meal), the agent
-          requires another exploration episode, even when the underlying
-          environment (e.g., the kitchen) stays the same.
-          Instead, an agent would ideally be able to perform many tasks after a
-          single exploration episode.
-          For example, after exploring the kitchen to find any ingredients, an
-          ideal robot chef would be able to then cook any meal involving those
-          ingredients.
-        </p>
-
-        <a href="resources/multitask.svg"><img src="resources/multitask.svg" width="500px"></img></a>
-        <center>
-          <p align="center">
-            Dinner schedule according to a robot chef trained in the standard meta-RL setting.
-          </p>
-        </center>
-
-        <p>
-          These two areas can obscure the <i>meta-exploration</i> problem of
-          how to optimally spend the exploration episode, as the former
-          requires unnecessary exploration to infer the task, while the latter
-          only requires the agent to explore to discover information relevant to a single
-          task.
-          While intuitively, the agent should spend the exploration episode
-          gathering useful information for later execution episodes,
-          in many cases, optimal exploration collapses to simply solving the task.
-          For example, the agent can only discover that the task is to cook
-          pizza by successfully cooking pizza and receiving positive rewards.
-          Then, on future execution episodes, it just repeats its behavior from
-          the exploration episode.
-        </p>
-
-        <p>
-          <b>Instruction-based meta-RL (IMRL).</b> To make the meta-RL setting
-          more realistic, we propose a new setting called instruction-based
-          meta-RL (IMRL), which addresses the two above areas by providing the
-          agent with <i>instructions</i> (e.g., "cook pizza" or a one-hot
-          representation) that specify the task during execution episodes and
-          varying the task on different execution episodes by providing
-          different instructions.
-          Then, for example, after meta-training in different kitchens at a
-          factory, a robot chef could begin cooking many different meals
-          specified by a human in a new home kitchen, after a single setup
-          period (exploration episode).
-        </p>
-
-        <a href="resources/imrl.svg"><img src="resources/imrl.svg" width="800px"></img></a>
-        <center><p align="center">Instruction-based meta-RL. The task, which
-          changes each execution episode, is conveyed to the agent via
-          instructions. The environment still stays the same within a trial.
-        </p></center>
-
-        <p>
-          <b>Reward-free adaptation.</b>
-          In the standard meta-RL setting, the agent requires reward
-          observations during exploration episodes in order to infer the task.
-          However, by receiving instructions that specify the task in IMRL, the
-          agent no longer requires observing rewards to adapt to new tasks and
-          environments.
-          Concretely, IMRL enables <i>reward-free adaptation</i>, where
-          during meta-training, the agent uses reward observations during
-          execution episodes to learn to solve the task, but does not observe
-          rewards during exploration episodes.
-          During meta-testing, the agent never observes any rewards.
-          This enables modeling real-world deployment situations where
-          gathering reward supervision is be expensive.
-          For example, ideally, a robot chef would be able to adapt to a home
-          kitchen without any supervision from a human.
-        </p>
-
-        <p>
-          Importantly, setting the instruction to always be some "empty"
-          instruction recovers the standard meta-RL setting.
-          In other words, standard meta-RL is just IMRL, where the user's
-          desires are fixed within a trial and the user says nothing for the
-          instructions.
-          Therefore, algorithms developed for IMRL can also be directly applied
-          to the standard setting.
-        </p>
-
-      </div>
-
-      <br/><hr>
-      <div style="width:800px; margin:0 auto; text-align=center">
-        <center><h1><b>D</b>ecoupled <b>R</b>eward-free <b>E</b>xplor<b>a</b>tion and Execution in <b>M</b>eta-Reinforcement Learning (DREAM)</h1></center>
-      </div>
-      <div style="width:800px; margin:0 auto; text-align=left" align="left">
-        <p>
-          <b>A chicken-and-egg coupling problem.</b> A common approach
-          (Wang et al., 2016, Duan et al., 2016) for
-          learning useful exploration behaviors is to optimize a recurrent
-          policy that performs both exploration and execution episodes
-          end-to-end based on the execution episode rewards.
-          The hope is to capture the information learned during the exploration
-          episode in the recurrent policy's hidden state, which will then be
-          useful for execution episodes.
-          However, we identify a chicken-and-egg <i>coupling problem</i>, where
-          learning good exploration behaviors requires already having learned
-          good execution behaviors and vice-versa, that prevents such an
-          approach from learning.
-          For example, if a robot chef fails to discover the locations of
-          ingredients in a kitchen (bad exploration), then cannot possibly
-          learn how to cook (bad execution).
-          On the other hand, if the robot does not know how to cook (bad
-          execution), then no matter what it does during the exploration
-          episode, it will still not successfully cook a meal, making learning
-          exploration challenging.
-          Since robots aren't created with the ability to cook or explore, they
-          get stuck in this local optimum and have a hard time learning either.
+          In the <i>distracting bus</i> task, the agent must go to the goal
+          location (green square), which is randomly placed in one of the four
+          corners, in as few timesteps as possible.
+          In different problems, the destinations of the buses is randomized to
+          different permutations.
+          See the two examples above.
         </p>
 
         <div class="table-like" style="justify-content:space-evenly;max-width:1100px;margin:auto;padding:0px">
           <div>
-            <a href="resources/coupling.svg"><img src="resources/coupling.svg" width="375px" style="padding:0px"></img></a>
+            <a href="resources/city/dream_exploration.gif"><img src="resources/city/dream_exploration.gif" width="375px" style="padding:0px"></img></a>
+            <center><p align="center"><b>Exploration</b> learned by DREAM.</p></center>
           </div>
 
           <div>
-            <a href="resources/coupling_example.svg"><img src="resources/coupling_example.svg" width="375px"></img></a>
+            <a href="resources/city/dream_exploitation.gif"><img src="resources/city/dream_exploitation.gif" width="375px" style="padding:0px"></img></a>
+            <center><p align="center"><b>Exploitation</b> learned by DREAM.</p></center>
           </div>
         </div>
-        <center><p align="center">
-          The coupling problem. What came first: the chicken (good
-          exploration) or the egg (good execution)?
-        </p></center>
 
         <p>
-          <b>Avoiding the coupling problem with DREAM.</b> To avoid the
-          chicken-and-egg coupling problem, we propose to break the cyclic
-          depence between learning exploration and learning execution
-          behaviors, which we call DREAM.
-          Intuitively, we observe that good exploration can be learned by
-          trying to recover the information necessary for executing
-          instructions.
-          Therefore, from a high-level, DREAM consists of two main steps:
-          1) simultaneously learn an execution policy independently from
-          exploration and learn what information is necessary for execution and
-          2) learn an exploration policy to recover that information.
-        </p>
-
-        <a href="resources/dream_meta_training.svg"><img src="resources/dream_meta_training.svg" width="800px"></img></a>
-        <center><p align="center">To answer the chicken-and-egg problem, DREAM
-          manufactures its own egg, and out comes the chicken.
-        </p></center>
-
-        <p>
-          More concretely, in the first step, we train an execution policy \(\pi^\text{exec}\)
-          conditioned on the problem identifier \(\mu\), which in the cooking
-          example, may either directly identify attributes of the kitchen
-          (e.g., wall color or ingredient locations), or simply be a unique
-          identifier (e.g., a one-hot) for each kitchen.  This problem
-          identifier (directly or indirectly) encodes all the information
-          necessary to solve tasks in the kitchen, allowing the execution
-          policy to learn independently from exploration, which avoids the
-          coupling problem.
-          At the same time, our goal in the first step is to identify only the
-          information necessary for executing instructions, and the problem
-          identifier may also encode extraneous information, such as the wall
-          color.
-          To remove this, we apply an information bottleneck to obtain a
-          bottlenecked representation \(z\), which we use for training an
-          exploration policy \(\pi^\text{exp}\).
+          As shown above, DREAM learns to optimally explore (left) by visiting all of the helpful
+          (colored) buses, while ignoring all the unhelpful (gray) buses.
+          During exploitation episodes (right), this allows it to ride the bus that
+          leads closest to the goal, which yields optimal returns.
         </p>
 
         <p>
-          In the second step, once we've obtained a bottleneck representation
-          \(z\) that ideally contains only the information necessary for
-          executing instructions, we can train an exploration policy
-          \(\pi^\text{exp}\) to recover this information in the exploration
-          episode.
-          To do this, we roll-out the exploration policy to obtain an episode
-          \(\tau\) and then reward the policy based on how well this episode
-          encodes the information contained in \(z\).
-          Roughly, this reward is the mutual information
-          \(\mathcal{I}(z; \tau)\) between the bottlenecked representation
-          \(z\) and the episode \(\tau\).
+          In contrast, as shown below, both IMPORT and E-RL<sup>2</sup> get
+          stuck in a local optimum due to the chicken-and-egg problem, where
+          they learn not to explore at all (left), opting to immediately end the
+          exploration episode.
+          This yields suboptimal exploitation behavior (right), which walks to
+          the goal, since the bus destinations are not learned during exploration.
         </p>
 
-        <a href="resources/dream_meta_testing.svg"><img src="resources/dream_meta_testing.svg" width="400px"></img></a>
-        <center><p align="center">DREAM meta-testing.</p></center>
-
-        <p>
-          Typically, the problem identifier \(\mu\) is not available during
-          meta-testing, e.g., the attributes of a home kitchen may be unknown.
-          This might seem concerning, since, during meta-training, the
-          execution policy conditions on \(z\), which requires knowing \(\mu\).
-          However, since the exploration policy is trained to produce
-          exploration trajectories \(\tau\) that contain the same information as \(z\),
-          we can swap \(\tau\) for \(z\) at meta-test time.
-          See our paper for the details!
-        </p>
-
-      </div>
-      <br/><hr>
-
-      <center id="results"><h1>Results</h1></center>
-      <div style="width:800px; margin:0 auto; text-align=left", align="left">
         <div class="table-like" style="justify-content:space-evenly;max-width:1100px;margin:auto;padding:0px">
           <div>
-            <a href="resources/blue.png"><img src="resources/blue.png" width="375px"></img></a>
-            <center><p align="center">Sign reads <b style="color:blue;">blue</b>.</p></center>
+            <a href="resources/city/rl2_exploration.gif"><img src="resources/city/rl2_exploration.gif" width="375px"></img></a>
+            <center><p align="center"><b>Exploration</b> learned by E-RL<sup>2</sup> and IMPORT.</p></center>
+          </div>
+
+          <div>
+            <a href="resources/city/rl2_exploitation.gif"><img src="resources/city/rl2_exploitation.gif" width="375px"></img></a>
+            <center><p align="center"><b>Exploitation</b> learned by E-RL<sup>2</sup> and IMPORT.</p></center>
+          </div>
+        </div>
+
+        <hr>
+        <center><h2>Cooking</h2></center>
+
+        <center>
+          <a href="resources/city_examples.svg"><img src="resources/cooking_example.svg" width="800px"></img></a>
+          <p align="center" style="width:600px">
+            Examples of different problems and goals.
+            In different <i>problems</i>, the three fridges on the right are
+            different colors, indicating different ingredients.
+            In different <i>episodes</i>, the goal (recipe) changes to be
+            placing two ingredients in the pot in the correct order.
+          </p>
+        </center>
+
+        <p>
+          In the <i>cooking</i> task, the agent must place two ingredients in
+          the pot in the order specified by the recipe (goal).
+          The (color-coded) ingredients in the fridges change in different problems.
+          See the examples above.
+          The agent receives positive reward for each step of:
+          1) picking up the correct first ingredient;
+          2) placing it in the pot;
+          3) picking up the correct second ingredient;
+          4) placing it in the pot.
+          The agent receives a per timestep negative reward and also a large
+          negative reward for picking up the wrong ingredient (as it goes to
+          waste).
+        </p>
+
+        <div class="table-like" style="justify-content:space-evenly;max-width:1100px;margin:auto;padding:0px">
+          <div>
+            <a href="resources/cooking/dream_exploration.gif"><img src="resources/cooking/dream_exploration.gif" width="300px" style="padding:0px"></img></a>
+            <center><p align="center"><b>Exploration</b> learned by DREAM.</p></center>
+          </div>
+
+          <div>
+            <a href="resources/cooking/dream_exploitation.gif"><img src="resources/cooking/dream_exploitation.gif" width="300px"></img></a>
+            <center><p align="center"><b>Exploitation</b> learned by DREAM.</p></center>
+          </div>
+        </div>
+
+        <p>
+          As shown above, DREAM learns to optimally explore by picking up the
+          ingredients from each of the fridges one-by-one, which allows it to
+          learn where each ingredient is located (left).
+          Then during exploitation episodes (right), it then achieve optimal
+          returns by directly retrieving the ingredients specified by the recipe.
+        </p>
+
+        <p>
+          In contrast, as shown below, E-RL<sup>2</sup> and IMPORT, get stuck in a local
+          optimum due to the chicken-and-egg problem, where they suboptimally
+          explore by only visiting a single fridge (left).
+          Consequently, during exploitation episodes (right), they don't know
+          where the purple ingredient is located, so they wastefully
+          accidentally grab an extra green ingredient from the top-right fridge,
+          which incurs high negative reward.
+        </p>
+
+        <div class="table-like" style="justify-content:space-evenly;max-width:1100px;margin:auto;padding:0px">
+          <div>
+            <a href="resources/city/rl2_exploration.gif"><img src="resources/cooking/rl2_exploration.gif" width="300px" style="padding:0px"></img></a>
+            <center><p align="center"><b>Exploration</b> learned by E-RL<sup>2</sup> and IMPORT.</p></center>
+          </div>
+
+          <div>
+            <a href="resources/city/rl2_exploitation.gif"><img src="resources/cooking/rl2_exploitation.gif" width="300px"></img></a>
+            <center><p align="center"><b>Exploitation</b> learned by E-RL<sup>2</sup> and IMPORT.</p></center>
+          </div>
+        </div>
+
+        <hr>
+        <center><h2>Sparse-Reward 3D Visual Navigation</h2></center>
+
+        <div class="table-like" style="justify-content:space-evenly;max-width:1100px;margin:auto;padding:0px">
+          <div>
+            <a href="resources/green.png"><img src="resources/green.png" width="375px"></img></a>
+            <center><p align="center">Sign reads <b style="color:green;">green</b>.</p></center>
           </div>
 
           <div>
@@ -568,65 +438,66 @@
         </div>
 
         <p>
-          <b>Sparse-reward 3D visual navigation.</b>
-          In one experiment from our paper, we evaluate DREAM on the
-          sparse-reward 3D visual navigation problem family proposed by
-          Kamienny et al., 2020 (pictured above), which we've made harder by
+          The sparse-reward 3D visual navigation task evalutes agents' ability to
+          scale to problems with high-dimensional visual observations and
+          sophisticated exploration challenges, pictured above.
+          We've made the benchmark from Kamienny et al., 2020 harder by
           including a visual sign and more objects.
-          During execution episodes, the agent receives an instruction to go to
-          an object: a ball, block or key.
+          Each episode contains a goal to collect either a block or key.
           The agent starts episodes on the far side of the barrier, and must
           walk around the barrier to read the sign
           (highlighted in <b style="color:#e6e600;">yellow</b>),
-          which in the two versions of the problem, either specify going to the
-          <b style="color:blue;">blue</b> or <b style="color:red;">red</b>
+          which in the three versions of the problem, specify going to the
+          <b style="color:green;">green</b>, <b style="color:red;">red</b>,
+          or <b style="color:blue;">blue</b> (not shown)
           version of the object.
           The agent receives 80x60 RGB images as observations and can turn
           left or right, or move forward.
-          Going to the correct object gives reward <b>+1</b> and going to the
+          Going to the correct (correct color and shape)
+          object gives reward <b>+1</b> and going to the
           wrong object gives reward <b>-1</b>.
+          Otherwise, the agent receives <b>0</b> reward.
         </p>
 
         <p>
-          DREAM learns near-optimal exploration and execution behaviors on this
+          DREAM learns near-optimal exploration and exploitation behaviors on this
           task, which are pictured below. On the left, DREAM spends the
           exploration episode walking around the barrier to read the sign,
           which says <b style="color:blue;">blue</b>.
-          On the right, during an execution episode, DREAM receives an
-          instruction to go the key. Since DREAM already read that the sign said
-          <b style="color:blue;">blue</b> during the exploration episode, it goes to the
+          On the right, during an exploitation episode, DREAM receives the
+          goal to collect the key. Since DREAM already read that the sign said
+          <b style="color:blue;">blue</b> during the exploration episode, it collects the
           <b style="color:blue;">blue</b> key.
         </p>
 
-        <center><h3>Behaviors learned by DREAM</h3></center>
         <div class="table-like" style="justify-content:space-evenly;max-width:1100px;margin:auto;padding:0px">
           <div>
             <a href="resources/explore.gif"><img src="resources/explore.gif" width="375px" style="padding:0px"></img></a>
-            <center><p align="center">Exploration.</p></center>
+            <center><p align="center"><b>Exploration</b> learned by DREAM.</p></center>
           </div>
 
           <div>
             <a href="resources/execute.gif"><img src="resources/execute.gif" width="375px"></img></a>
-            <center><p align="center">Execution: go to the key.</p></center>
+            <center><p align="center"><b>Exploitation</b> learned by DREAM (collect the key).</p></center>
           </div>
         </div>
 
         <p>
           <b>Comparisons.</b>
           Broadly, prior meta-RL approaches fall into two main groups:
-          (i) <i>end-to-end</i> approaches, where exploration and execution are
-          optimized end-to-end based on execution rewards, and
-          (ii) <i>decoupled</i> approaches, where exploration and execution are
+          (i) <i>end-to-end</i> approaches, where exploration and exploitation are
+          optimized end-to-end based on exploitation rewards, and
+          (ii) <i>decoupled</i> approaches, where exploration and exploitation are
           optimized with separate objectives.
           We compare DREAM with state-of-the-art approaches from both
           categories.  In the end-to-end category, we compare with:
 
           <ul>
             <li>
-              RL<sup>2</sup> (Duan et al., 2016, Wang et al., 2016), the
+              E-RL<sup>2</sup> (Stadie et al., 2018), the
               canonical end-to-end approach, which learns a recurrent policy
               conditioned on the entire sequence of past state and reward
-              observations.
+              observations, modified to better learn exploration.
             </li>
             <li>
               VariBAD (Zintgraf et al., 2019), which additionally adds
@@ -639,7 +510,7 @@
             </li>
             <li>
               IMPORT (Kamienny et al., 2020), which additionally leverages the
-              problem identifier to help learn execution behaviors.
+              problem identifier to help learn exploitation behaviors.
             </li>
           </ul>
 
@@ -659,12 +530,12 @@
           <b>Quantitative results.</b>
           Below, we plot the returns achieved by all approaches.
           In contrast to DREAM, which achieves near-optimal returns,
-          we find that the end-to-end approaches never read the sign, and
+          we find that the end-to-end approaches get stuck in local optima,
+          indicative of the coupling problem.
+          They never read the sign, and
           consequently avoid all objects, in fear of receiving negative reward
-          for going to the wrong object, even when they are allowed to observe
-          rewards in the exploration episode (dotted lines).
-          Therefore, they achieve no rewards, which is indicative of the
-          coupling problem.
+          for going to the wrong object.
+          This achieves 0 reward.
         </p>
 
         <p>
@@ -672,38 +543,40 @@
           avoid the coupling problem, optimizing their objectives does not lead
           to the optimal exploration policy.
           For example, Thompson sampling approaches (PEARL-UB) do not achieve
-          optimal reward, even with the optimal problem-specific execution
+          optimal reward, even with the optimal problem-specific exploitation
           policy and access to the true posterior distribution over problems.
           Recall that Thompson sampling explores by sampling a problem from the
-          posterior distribution and following the execution policy for that
+          posterior distribution and following the exploitation policy for that
           problem.
-          Since the optimal execution policy directly goes to the correct
+          Since the optimal exploitation policy directly goes to the correct
           object, and never reads the sign, Thompson sampling never reads the
           sign during exploration.
         </p>
 
         <center>
           <a href="resources/sign.png"><img src="resources/sign.png" width="500px"></img></a>
-          <p align="center" style="width:500px">Training curves with (dotted lines) and without
-          (solid lines) rewards during exploration. Only DREAM reads the sign
-          and solves the task.</p>
+          <p align="center" style="width:500px">
+          Only DREAM reads the sign and solves the task.</p>
         </center>
 
+        <hr>
+        <center id="acknowledgements"><h1>Additional Experiments</h1></center>
         <p>
-          <b>Additional results.</b>
-          In our paper, we also evaluate DREAM on additional didactic problems,
-          designed to to answer the following questions:
+          In the experiments, we evaluated DREAM to answer the following questions:
           <ul>
             <li>
-              Can DREAM efficiently explore to discover only the information
-              required to execute instructions?
+              Can DREAM efficiently explore to discover only the task-relevant information
+              in the face of distractions?
             </li>
             <li>
-              Can DREAM generalize to unseen instructions and environments?
+              Can DREAM leverage informative objects to aid exploration?
             </li>
             <li>
-              Does DREAM also show improved results in the standard meta-RL
-              setting, as well as instruction-based meta-RL?
+              Can DREAM learn exploration and exploitation behaviors that generalize to unseen problems?
+            </li>
+            <li>
+              Can DREAM scale to challenging exploration problems with
+              high-dimensional states and sparse rewards?
             </li>
           </ul>
           Broadly, the answer is yes to all of these questions.
@@ -713,7 +586,7 @@
       </br><hr>
 
       <center><h1>Source Code</h1></center>
-      <p>Check out the code for DREAM, IMRL, and the problem families we evaluate on at GitHub!</p>
+      <p>Check out the code for DREAM and the benchmarks we evaluate on at GitHub!</p>
       <div class="table-like">
         <span style="font-size:28px"><a href="https://github.com/ezliu/dream">[GitHub]</a></span>
       </div>
@@ -736,7 +609,6 @@
       </div>
     <br><hr>
       <center id="acknowledgements"><h1>Acknowledgements</h1></center>
-      <div style="width:800px; margin:0 auto; text-align=right">
         <p>
           This website is adapted from
           <a href="https://orybkin.github.io/video-gcp/">this website</a>, which was
@@ -746,12 +618,17 @@
         </p>
 
         <p>
+          The grid world animations were made by
+          <a href="https://www.linkedin.com/in/arkira/">Arkira Chantaratananond</a>.
+        </p>
+
+        <p>
           Icons used in some of the above figures were made by Freepik,
-          ThoseIcons, dDara, ThoseIcons, mynamepong, Icongeek26, and Vitaly Gorbachev from
+          ThoseIcons, dDara, Pixel perfect, ThoseIcons, mynamepong, Icongeek26,
+          and Vitaly Gorbachev from
           <a href="https://www.flaticon.com">flaticon.com</a>.
         </p>
-      </div>
-      </table>
+    </table>
 </div>
 </body>
 </html>

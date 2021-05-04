@@ -101,8 +101,8 @@ python3 main_varibad.py varibad -b environment=\"cooking\" -c configs/varibad.js
 If you use this code, please cite our paper.
 
 ```
-@article{liu2020explore,
-  title={Explore then Execute: Adapting without Rewards via Factorized Meta-Reinforcement Learning},
+@article{liu2020decoupling,
+  title={Decoupling Exploration and Exploitation for Meta-Reinforcement Learning without Sacrifices},
   author={Liu, Evan Zheran and Raghunathan, Aditi and Liang, Percy and Finn, Chelsea},
   journal={arXiv preprint arXiv:2008.02790},
   year={2020}

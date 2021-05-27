@@ -3,7 +3,7 @@
 
 *Authors*: [Evan Zheran Liu](https://cs.stanford.edu/~evanliu/), [Aditi Raghunathan](https://stanford.edu/~aditir/), [Percy Liang](https://cs.stanford.edu/~pliang/), [Chelsea Finn](https://ai.stanford.edu/~cbfinn/)
 
-Source code accompanying our [paper](https://arxiv.org/abs/2008.02790).
+Source code accompanying our ICML 2021 [paper](https://arxiv.org/abs/2008.02790).
 Also see our [project web page](https://ezliu.github.io/dream/).
 
 ## Requirements

@@ -14,7 +14,7 @@ gym==0.16.0
 -e git+https://github.com/maximecb/gym-minigrid.git@a5f4ef3684875eba613087dcef21be57c186bdc8#egg=gym_minigrid
 -e git+https://github.com/maximecb/gym-miniworld.git@7531d6ca5a4de2361f6d00d1b24bfa135075736b#egg=gym_miniworld
 idna==2.9
-joblib==0.14.1
+joblib==1.2.0
 kiwisolver==1.1.0
 Markdown==3.2.1
 matplotlib==3.0.3
